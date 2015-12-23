@@ -1,0 +1,103 @@
+# Introduction #
+The following code will encounter IllegalStateException at runtime on the client-side:
+
+```
+<zs:UITreeGrid  autoFetchData='true'>
+  <!-- children nodes -->
+</zs:UITreeGrid>
+```
+
+The reason being, autoFetchData attribute of TreeGrid cannot be changed after the TreeGrid is created. There are quite a number of Smart classes that have immutable properties. Any set method of a Smart class that throws IllegalStateException is (so far in all my encounters) an immutable property setter.
+
+# Details #
+UiBinder causes the TreeGrid object to be created first and then apply  setAutoFetchData to that object. Since autoFetchData attribute cannot be changed after TreeGrid is instantiated, the client-side runtime would throw IllegalStateException.
+
+# Solution #
+For any Smart class where immutable properties need to be defined, rather than allowing the usual UiBinder process instantiate the class, the solution is to reroute the instantiation of the class to the template bean.
+
+## Solution 1 ##
+
+A @UiFactory method is defined in the template bean so that UiBinder reroutes the instantiation of the Smart class the @UiFactory method.
+
+Note that the name of the UiFactory method is inconsequential. The only requirement is a @UiFactory defined for the particular class where the instantiation needs to be rerouted to the local control of the template bean:
+
+
+The template bean code behind the template:
+```
+public class HelloPane
+extends LazyCanvas<HLayout>{
+
+  private static HelloPaneUiBinder uiBinder
+    = GWT.create(HelloPaneUiBinder.class);
+
+  interface HelloPaneUiBinder extends UiBinder<HLayout, HelloPane> {}
+
+  public HelloPane() {
+  }
+
+  @Override
+  protected HLayout createCanvas() {
+    return uiBinder.createAndBindUi(this);
+  }
+	
+  // name of method inconsequential
+  @UiFactory UITreeGrid mkTreeGrid(){ 
+    UITreeGrid treeGrid = new UITreeGrid();
+    treeGrid.setAutoFetchData(true);
+    return treeGrid;
+  }
+```
+
+The template ui.xml:
+```
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:zs="urn:import:org.synthful.smartgwt.client.widgets"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:with field='code' type='holy.cow.HelloPane'/>
+  <zs:UIHLayout ui:field="mainLayout">
+    <zs:UITreeGrid ui:field="navTree" showResizeBar='true' width='100px'>
+      <!-- child nodes' definition -->
+    </zs:UITreeGrid>
+  </zs:UIHLayout>
+</ui:UiBinder>
+```
+
+## Solution 2 ##
+Alternatively, the solution is having the corresponding @UiField instantiate and initialize the class, by specifying the parameter (provided=true) - meaning that the instantiation is provided locally by the template bean code:
+
+The template's bean:
+```
+public class HelloPane
+extends LazyCanvas<HLayout>{
+
+  private static HelloPaneUiBinder uiBinder
+    = GWT.create(HelloPaneUiBinder.class);
+
+  interface HelloPaneUiBinder extends UiBinder<HLayout, HelloPane> {}
+
+  public HelloPane() {
+  }
+
+  @Override
+  protected HLayout createCanvas() {
+    this.navTree = new UITreeGrid();
+    this.navTree.setAutoFetchData(true);
+    return uiBinder.createAndBindUi(this);
+  }
+
+  @UiField HLayout mainLayout;
+
+  // Specify that instantiation of this object
+  // is provided locally by the code bean
+  @UiField (provided=true) UITreeGrid navTree;
+}
+```
+
+The template ui.xml is similar to solution 1.
+
+# Conclusion #
+In solution 1, the rerouting of instantiation affects every instance of the class used in the template's bean and ui.xml.
+
+Solution 2 only reroutes the instantiation per instance of the Smart class.
+
+Therefore, if you have more than one instance of a particular Smart class and you do not wish to have all of them instantiated the same way, you should use solution 2.

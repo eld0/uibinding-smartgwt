@@ -1,0 +1,147 @@
+_Usual warning_: **Do not** lay this SmartGWT construct into a plain GWT widget. If your smartGWT construct does not display, it means you have to hunt for a plain GWT widget you do not realise is hidden somewhere between the root panel and your SmartGWT construct.
+
+This example uses a LazyCanvas, so that you can build a whole website with lots of tabsets wrapped with a LazyCanvas, but each tabset is instantiated only when you use them.
+
+**HomeTabset1.ui.xml**:
+```
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:zs="urn:import:org.synthful.smartgwt.client.widgets"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:with field='main' type='hello.Main'/>
+  <zs:UITabSet ui:field="tabset" width="100%" height='{main.getTabHeight}'>
+    <zs:UITab ui:field="taba" title="קרא">
+      <zs:UILabel>שגדליק</zs:UILabel>
+    </zs:UITab>
+    <zs:UITab title="השמים">
+      <zs:UILabel>לא אירא רע</zs:UILabel>
+    </zs:UITab>
+    <zs:UITab title="שלח">
+      <zs:UILabel>להיתראות</zs:UILabel>
+    </zs:UITab>
+  </zs:UITabSet>
+</ui:UiBinder>
+```
+
+
+**HomeTabset1.java** code behind HomeTabset1.ui.xml:
+```
+import org.synthful.smartgwt.client.LazyCanvas;
+import com.smartgwt.client.widgets.tab.TabSet;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Widget;
+
+public class HomeTabset1
+extends LazyCanvas<TabSet>{
+
+  interface HomeTabsetUiBinder
+  extends UiBinder<Widget, HomeTabset1> {
+  }
+  
+  private static HomeTabsetUiBinder uiBinder =
+    GWT.create(HomeTabsetUiBinder.class);
+
+  @UiField
+  TabSet tabset;
+
+  public HomeTabset1(){
+    this.setTitle("Home1");
+  }
+
+  @Override
+  protected TabSet createCanvas() {
+    uiBinder.createAndBindUi(this);
+    return this.tabset;
+  }
+}
+```
+
+
+**Main.ui.xml**:
+```
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:zs="urn:import:org.synthful.smartgwt.client.widgets"
+  xmlns:my="urn:import:hello.main.client"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  >
+  <ui:with field='main' type='hello.Main'/>
+  <zs:UIVLayout ui:field="canvas" height="{main.getTabHeight}" width="100%">
+    <g:Label ui:field="caption" height="12px">Home</g:Label>
+    <zs:UICanvas ui:field="contentPanel" width="100%">
+      <my:HomeTabset ui:field="home" width="100%"/>
+      <my:HomeTabset1 ui:field="home1" width="100%"/>
+    </zs:UICanvas>
+    <g:Label height="10px">Quick brown fox</g:Label>
+  </zs:UIVLayout>
+</ui:UiBinder>
+```
+
+
+**Main.java** code behind Main.ui.xml and entrypoint:
+```
+import ...
+
+public class Main
+  implements EntryPoint
+{
+  interface MainUiBinder
+    extends UiBinder<Widget, Main>{}
+
+  static private MainUiBinder uiBinder =
+    GWT.create(MainUiBinder.class);
+
+  @UiField public UICanvas contentPanel;
+  @UiField UIVLayout canvas;
+
+  @UiField(provided=true)
+  Main main;
+  
+  @UiField public Label caption;
+  @UiField public HomeTabset1 home1;
+  @UiField public Tabset2 tabset2;  
+  Canvas[] tabsetContainer;
+
+  @Override
+  public void onModuleLoad() {
+    this.main = this;
+    uiBinder.createAndBindUi(this);
+    RootPanel.get().add(canvas);
+    tabsetContainer =
+      new Canvas[]{
+        home1, tabset2 /*, whatever you put in Main.ui.xml */};
+    this.selectTabset(home);
+  }
+  
+  public String getMenuBarHeight(){
+    return ""+Main.menuBarHeight;
+  }
+  
+  public int getTabBarHeight(){
+    return tabBarHeight;
+  }
+  
+  public String getTabHeight(){
+    return
+     ""+(Window.getClientHeight()
+     - menuBarHeight - tabBarHeight - tabHeightAllowance);
+  }
+  
+  public void selectTabset(Canvas c){
+    for (Canvas cx : tabsetContainer){
+      if (cx!=c)
+        cx.hide();
+    }
+    this.caption.setText(c.getTitle());
+    c.show();
+  }
+
+  static private int
+    menuBarHeight = 22,
+    tabBarHeight = 20,
+    tabHeightAllowance = 25;
+}
+```

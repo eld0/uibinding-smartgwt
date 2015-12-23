@@ -1,0 +1,40 @@
+# Introduction #
+There two ways to add widgets to a parent node.
+  * Directly
+
+```
+    <zs:UIListGrid showResizeBar='true' width='100px'>
+        <zs:UITreeGridField>Personal Info</zs:UITreeGridField>
+        <zs:UITreeGridField>Avatar</zs:UITreeGridField>
+        <zs:UITreeGridField>Address</zs:UITreeGridField>
+        <zs:UITreeGridField>Email</zs:UITreeGridField>
+    </zs:UIListGrid>
+```
+
+  * Thro a buffer node
+
+```
+    <zs:UIListGrid showResizeBar='true' width='100px'>
+      <zs:UIListGridFieldArray>
+        <zs:UITreeGridField>Personal Info</zs:UITreeGridField>
+        <zs:UITreeGridField>Avatar</zs:UITreeGridField>
+        <zs:UITreeGridField>Address</zs:UITreeGridField>
+        <zs:UITreeGridField>Email</zs:UITreeGridField>
+      </zs:UIListGridFieldArray>
+    </zs:UIListGrid>
+```
+
+# Details #
+The optimal way is to add widgets to a parent thro the buffer node.
+The reason being -
+Smart data objects do not have add(field) methods.
+
+Rather, they have setField(Field[.md](.md)) methods.
+UiBinder uses the add(Widget) method to add per child node.
+Therefore, every time a node is added, the add(Widget) method has to withdraw all the current child nodes into an array and append the next node at the end of the array and then submit the whole array to the setField(Field[.md](.md)) method.
+
+This is not optimal because if we had to add 20 child nodes to a parent node, the array would have to be reconstructed and reabsorbed 20 times.
+
+What the buffer node does is - it has an ArrayList to collect each node as UiBinder passes the node to its add(Widget) method. At the closing tag of the buffer node, the ArrayList's object array is passed to the parent node's setField(Field[.md](.md)) method.
+
+You can choose to either define child nodes directly or thro a buffer. If there are not more than three child nodes, direct definition of the child nodes should be fine. However, if more child nodes are needed to be defined, you should define them thro a buffer node.
