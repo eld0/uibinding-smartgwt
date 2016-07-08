@@ -42,7 +42,10 @@ abstract public class UIMasqueradedDataSource<D extends DataSource>
 extends Widget
 implements UIMasquerade<D>, HasWidgets {
 	
-	abstract protected D setDataSource(); 
+	abstract protected D setDataSource(Map<String,String> attributes);
+	protected D setDataSource(){
+		return setDataSource(null);
+	}
 	public String getID() {
 		return datasource.getID();
 	}
@@ -297,7 +300,15 @@ implements UIMasquerade<D>, HasWidgets {
 	public OperatorId[] getFieldOperators(DataSourceField field) {
 		return datasource.getFieldOperators(field);
 	}
-	final protected D datasource = setDataSource();
+	final protected D datasource;
+
+	public UIMasqueradedDataSource(){
+		datasource = setDataSource();
+	}
+
+	public UIMasqueradedDataSource(Map<String,String> parameters){
+		datasource = setDataSource(parameters);
+	}
 	
 	@Override
 	public void add(Widget w) {
