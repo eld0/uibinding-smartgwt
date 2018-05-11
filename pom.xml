@@ -4,16 +4,11 @@
 	<groupId>org.synthful</groupId>
 	<artifactId>uibinding-smartgwt</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.23-SMARTGWT-5.1p</version>
+	<version>1.0.24-SMARTGWT-12.0p</version>
 	<name>uibinding-smartgwt</name>
 	<description>This project adapts Smart GWT visual classes to enable them to be used as UiBinder nodes</description>
 
 	<repositories>
-		<repository>
-			<id>smart-client</id>
-			<name>Smart Client Repository</name>
-			<url>http://www.smartclient.com/maven2</url>
-		</repository>
 		<repository>
 			<id>k3lab-shared</id>
 			<url>http://nexus.k3lab.com/content/repositories/shared-repo</url>
@@ -21,8 +16,8 @@
 	</repositories> 
 
 	<properties>
-		<gwtVersion>2.7.0</gwtVersion>
-		<smartGwtVersion>5.1p</smartGwtVersion>
+		<gwtVersion>2.8.2</gwtVersion>
+		<smartGwtVersion>12.0p</smartGwtVersion>
 	</properties>
 
 	<dependencies>

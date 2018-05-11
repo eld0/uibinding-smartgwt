@@ -444,6 +444,7 @@ implements UIMasquerade<DataSourceField>, HasText
 		field.setValueMap(valueMap);
 	}
 
+	@Deprecated
 	public void setEditorType(FormItem editorType) {
 		field.setEditorType(editorType);
 	}
@@ -600,6 +601,7 @@ implements UIMasquerade<DataSourceField>, HasText
 		return field.getValueMap();
 	}
 
+	@Deprecated
 	public void setReadOnlyEditorType(FormItem editorType) {
 		field.setReadOnlyEditorType(editorType);
 	}
@@ -752,10 +754,12 @@ implements UIMasquerade<DataSourceField>, HasText
 		return field.getIgnoreTextMatchStyle();
 	}
 
+	@Deprecated
 	public void setLenientXPath(Boolean lenientXPath) {
 		field.setLenientXPath(lenientXPath);
 	}
 
+	@Deprecated
 	public Boolean getLenientXPath() {
 		return field.getLenientXPath();
 	}
@@ -800,8 +804,12 @@ implements UIMasquerade<DataSourceField>, HasText
 		return field.getUploadFieldName();
 	}
 
-	public void exportForceText() {
-		field.exportForceText();
+	public boolean getExportForceText() {
+		return field.getExportForceText();
+	}
+
+	public void setExportForceText(boolean exportForceText){
+		field.setExportForceText(exportForceText);
 	}
 
 	public void setEditorProperties(FormItem editorProperties) {
