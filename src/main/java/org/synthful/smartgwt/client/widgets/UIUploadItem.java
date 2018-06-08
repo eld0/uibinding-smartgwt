@@ -1103,6 +1103,17 @@ public class UIUploadItem extends UIFormItem<UploadItem>{
 	public Boolean validate() {
 		return item.validate();
 	}
-
+	public String getAccept(){
+		return item.getAccept();
+	}
+	public void setAccept(String accept){
+		item.setAccept(accept);
+	}
+	public Boolean getMultiple(){
+		return item.getMultiple();
+	}
+	public void setMultiple(Boolean multiple){
+		item.setMultiple(multiple);
+	}
 
 }
