@@ -4,20 +4,20 @@
 	<groupId>org.synthful</groupId>
 	<artifactId>uibinding-smartgwt</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.25-SMARTGWT-12.0p</version>
+	<version>1.0.26-SMARTGWT-12.0p</version>
 	<name>uibinding-smartgwt</name>
 	<description>This project adapts Smart GWT visual classes to enable them to be used as UiBinder nodes</description>
 
 	<repositories>
 		<repository>
-			<id>k3lab-shared</id>
+			<id>k3lab-thirdparty</id>
 			<url>http://nexus.k3lab.com/content/groups/thirdparty-repos</url>
 		</repository>
 	</repositories> 
 
 	<properties>
 		<gwtVersion>2.8.2</gwtVersion>
-		<smartGwtVersion>12.0p</smartGwtVersion>
+		<smartGwtVersion>12.0-p20180825</smartGwtVersion>
 	</properties>
 
 	<dependencies>
